@@ -58,7 +58,7 @@ def WriteDatas(write_list):
 		json.dump(write_list,f)
 
 def Test(review_pencent):
-	print(u"测试模式")
+	print(u"Test Model")
 	data=ReadDatas()
 	t=time.time()
 	endflag=0
@@ -72,7 +72,7 @@ def Test(review_pencent):
 				newword.append(i)
 			else :
 				review.append(i)
-		print("\n\n(newword,review):",len(newword),len(review),"\n\n")
+		print("(newword,review):",len(newword),len(review))
 
 		for k in range(10):
 			if random.random()>review_pencent:
