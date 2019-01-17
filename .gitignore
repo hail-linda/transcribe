@@ -3,12 +3,13 @@
 *.png
 
 # logs (json)
-datas/*.json
+/datas/*.json
 
-/ECDICT-master
+ECDICT-master
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+*.py~
 *.py[cod]
 *$py.class
 
