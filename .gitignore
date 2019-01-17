@@ -3,7 +3,7 @@
 *.png
 
 # logs (json)
-*.json
+datas/*.json
 
 /ECDICT-master
 
