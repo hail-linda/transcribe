@@ -1,6 +1,6 @@
 # coding=utf-8
 from dic.stardict import DictCsv
-import Image,ImageFont,ImageDraw
+from PIL import Image,ImageFont,ImageDraw
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +9,7 @@ from matplotlib.font_manager import FontProperties
 import json , os , time , random
 from reportlab.lib.pagesizes import A4, portrait, landscape
 from reportlab.pdfgen import canvas
+import os  
 
 def init():
 	D=DictCsv("dic/ecdict.csv")
@@ -37,8 +38,12 @@ def init():
 				word_list.append(word_info)
 
 
+
+
 	print(str(len(word_list))+" words")
 	WriteDatas(word_list)
+
+
 
 def ReadDatas():
 	for i,j,k in os.walk("./datas"):
@@ -55,9 +60,13 @@ def ReadDatas():
 
 	return read_list
 
+
+
 def WriteDatas(write_list):
 	with open("./datas/"+str(time.time())+".json","w") as f:
 		json.dump(write_list,f)
+
+
 
 def test(review_pencent):
 	print(u"Test Model")
@@ -81,10 +90,10 @@ def test(review_pencent):
 				z=random.randint(0,len(newword)-1)
 				i=newword[z]
 				print(str(data[i]['word'])+"     ? 1:yes 0:no")
-				ip1 = raw_input()
+				ip1 = input()
 				if ip1=="1":
 					print(data[i]['translation']+"    ? 1:yes 0:no")
-					ip2 = raw_input()
+					ip2 = input()
 					if ip2=="1":
 						data[i]['start_time']=t
 						data[i]['n_yes']=1
@@ -111,6 +120,8 @@ def test(review_pencent):
 				z=random.randint(0,len(newword)-1)
 				i=newword[z]
 				
+
+
 def status():
 	data=ReadDatas()
 	newword = 0 
@@ -137,6 +148,8 @@ def status():
 			+str(learning)+"  \t学习中单词数\n"
 			+str(1.0*learning/len(data)*100.0)[:4]+"%  \t比例\n")
 
+
+
 def pre_draw(nPages):
 	NumberOfWordPerPage = 9
 	CopyRow = 2
@@ -148,7 +161,7 @@ def pre_draw(nPages):
 	word_number=[]
 	character_list=[]	
 	for i in range(len(data)):
-		if data[i]['priority'] > 0 and data[i]['priority'] < 5 :
+		if int(data[i]['priority']) > 0 and int(data[i]['priority']) < 5 :
 			word_number.append(i)
 	for i in range(nPages) :
 		Graffiti_list=[]
@@ -176,7 +189,9 @@ def pre_draw(nPages):
 					L.set_length(LineLength)
 					Graffiti_list.append(L)
 		draw(Graffiti_list,i+1,nPages)
-	convert_images_to_pdf("imgs/", "papers/"+str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))+".pdf")
+	convert_images_to_pdf("imgs/", "papers/"+str(time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()))+".pdf")
+
+
 
 def convert_images_to_pdf(img_path, pdf_path):
 	pages = 0
@@ -193,6 +208,87 @@ def convert_images_to_pdf(img_path, pdf_path):
 	for i in l:
 		os.remove(img_path + os.sep + str(i))
 	print("finish")
+
+
+def wallpaper():
+	NumberOfWordPerPage = 8
+	CopyRow = 2
+	CopyCol = 5
+	LineSpace = 6
+	ColumnSpace = 5
+	LineLength = 12
+	data=ReadDatas()
+	word_number=[]
+	character_list=[]	
+	for i in range(len(data)):
+		if int(data[i]['priority']) > 0 and int(data[i]['priority']) < 5 :
+			word_number.append(i)
+	Graffiti_list=[]
+	for j in range(NumberOfWordPerPage):
+		z=random.randint(0,len(word_number)-1)
+
+		word = data[word_number[z]]['word']
+		translation = data[word_number[z]]['translation'].replace("\n","  ")[:60]
+
+		W=Graffiti()
+		W.set_name(word)
+		W.set_xy(15,200-20-(CopyRow+1)*LineSpace*j)
+		Graffiti_list.append(W)
+
+		W=Graffiti()
+		W.set_name(word)
+		if j % 2 == 0:
+			W.set_xy(int(j/2)*15+22,27)
+		else :
+			W.set_xy(int(j/2)*15+22,17)
+		Graffiti_list.append(W)
+			
+		T=Graffiti()
+		T.set_name(translation)
+		T.set_xy(22,200-28-(CopyRow+1)*LineSpace*j)
+		Graffiti_list.append(T)
+
+		for m in range(CopyRow):
+			for n in range(CopyCol):
+				L=Graffiti()
+				L.set_name("line")
+				L.set_xy(8+(LineLength+ColumnSpace)*n,200-20-(CopyRow+1)*LineSpace*j-(m+1)*LineSpace)
+				L.set_length(LineLength)
+				Graffiti_list.append(L)
+	plt.xticks([])
+	plt.yticks([])
+	plt.axis('off')
+	plt.axis([0, 100, 0, 200]) 
+	for i in range(5):
+		plt.plot([i*20,i*20],[0,200],color='black',linewidth=500.0)
+	#汉字字体设置
+	mpl.rcParams['font.sans-serif'] = ['SimHei'] # 指定默认字体
+	mpl.rcParams['axes.unicode_minus'] = False # 解决保存图像是负号'-'显示为方块的问题
+	font=FontProperties(fname=r"SIMHEI.TTF") 
+	#主图模板
+	plt.plot([5,95],[185,185],color='white')
+	plt.plot([5,95],[10,10],color='white')
+	plt.plot([5,95],[35,35],color='white')
+	plt.text(60,187,u'打印时间:'+str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())),fontsize=10,fontproperties=font,color='white')
+	
+
+	for G in Graffiti_list :
+		if G.name == "line" :
+			pass
+		else :
+			plt.text(G.x,G.y,G.name,fontsize=18,fontproperties=font,color='white',weight='bold')
+
+	plt.tight_layout()
+	fig = matplotlib.pyplot.gcf()
+	fig.subplots_adjust(bottom=0,left=0,right=1,top=1)
+	fig.set_size_inches(8.27,11.69)
+	#fig.savefig("./imgs/"+str(time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()))+'.png', dpi=150)
+	fig.savefig('wallpaper.jpg', dpi=600)
+	print( str(time.strftime("%Y-%m-%d-%H:%M:%S", time.localtime())))
+	plt.close('all')
+	time.sleep(1)
+	os.system('FWRW.exe') 
+	
 
 class Graffiti(object):
 	def __init__(self):
@@ -211,6 +307,8 @@ class Graffiti(object):
 	def set_length(self,integer):
 		self.length = integer
 
+
+
 def draw(Graffiti_list,whichPage,totalPage):
 	#坐标轴配置
 	plt.xticks([])
@@ -222,7 +320,6 @@ def draw(Graffiti_list,whichPage,totalPage):
 	mpl.rcParams['axes.unicode_minus'] = False # 解决保存图像是负号'-'显示为方块的问题
 	font=FontProperties(fname=r"SIMHEI.TTF") 
 	#主图模板
-	use_date = "2019-01-17"
 
 	plt.plot([5,95],[185,185],color='black')
 	plt.plot([5,95],[10,10],color='black')
@@ -234,7 +331,6 @@ def draw(Graffiti_list,whichPage,totalPage):
 			plt.plot([G.x,G.x+G.length],[G.y,G.y],color='black')
 		else :
 			plt.text(G.x,G.y,G.name,fontsize=10,fontproperties=font)
-	
 	plt.tight_layout()
 	fig = matplotlib.pyplot.gcf()
 	fig.subplots_adjust(bottom=0,left=0,right=1,top=1)
@@ -243,19 +339,26 @@ def draw(Graffiti_list,whichPage,totalPage):
 	plt.close('all')
 	print(str(whichPage)+"/"+str(totalPage))
 
+
+
 def funcChoose():
-	print("1:init\n2:test\n3:status\n4:draw\n")
-	flag = raw_input()
+	print("1:init\n2:test\n3:status\n4:draw\n5:change_wallpaper")
+	flag = input()
 	if flag == "1":
 		init()
 	elif flag =="2":
 		print("rate of review (0~1)")
-		test(float(raw_input()))
+		test(float(input()))
 	elif flag == "3":
 		status()
 	elif flag == "4":
 		print("number of page")
-		pre_draw(int(raw_input()))
+		pre_draw(int(input()))
+	elif flag == "5":
+		while(1):
+			wallpaper()
+			time.sleep(14)
+
 
 if __name__ == "__main__":
     funcChoose()
