@@ -39,7 +39,7 @@ ver1.0 编写自 python 2.7 ， ver2.0 迁移至python3.6，另外还需要有pi
 4. 命令行：
 > python ./article2word.py
 
-article2word.py 会把article.txt中的文章提取单词，保存在word.txt中，实际使用中，可以不执行步骤3-4，直接把单词扔进word.txt，自行选择。transcrible
+article2word.py 会把article.txt中的文章提取单词，保存在word.txt中，实际使用中，可以不执行步骤3-4，直接把单词扔进word.txt，自行选择。
 
 5. 命令行：
 
